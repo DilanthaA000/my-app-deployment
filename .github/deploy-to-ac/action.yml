@@ -1,0 +1,31 @@
+name: "Deploy app to AC"
+description: "Deploys app to Assurity cloud"
+inputs:
+  var-file:
+    description: "full path to CF variables"
+    required: true
+    default: ""
+  space:
+    description: "the space where the application will be deployed"
+    default: "default"
+runs:
+  using: "composite"
+  steps:
+    - name: Download stable CF cli
+      run: |
+        curl -L https://cli.run.pivotal.io/stable?release=linux64-binary --output cf-cli.tgz
+        tar zxvf cf-cli.tgz
+      shell: bash
+
+    - name: Deploy to AC
+      run: |
+        ./cf login -a 'https://api.sys.ap.assurity.cloud' -u $CF_USERNAME -o 'assurity' -s ${{ inputs.space }} -p $CF_PASSWORD
+        echo 'logged in'
+        ./cf push --vars-file '${{ inputs.var-file }}'
+      shell: bash
+
+    - name: cleanup .cf
+      run: |
+        echo "rermoving .cf"
+        rm -rf ~/.cf
+      shell: bash

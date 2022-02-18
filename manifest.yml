@@ -1,6 +1,11 @@
----
-buildpack: java_buildpack_offline
-memory: 512M
-disk_quota: 1G
-instances: 1
-path: target/demo-0.0.1-SNAPSHOT.jar
+applications:
+- name: test-app
+  health-check-type: process
+  disk_quota: 1024M
+  memory: 1024M
+  buildpacks:
+    - java_buildpack
+  env:
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 1.8.+ }}'
+  routes:
+    - route: testAP.app.ap.assurity.cloud
