@@ -1,0 +1,33 @@
+name: Test App
+
+on:
+  workflow_dispatch:
+    inputs:
+      app-name:
+       description: "Name of the app"
+       required: true
+       default: "Test App"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "ReplaceToken: APP_NAME"
+        uses: ./.github/actions/replace-token
+        with:
+          filename: "vars.yml"
+          name: "APP_NAME"
+          value: ${{ github.event.inputs.app-name }}
+
+      - name: Deploy to AC
+        uses: ./.github/actions/deploy-to-ac
+        env:
+          CF_USERNAME: ${{ secrets.AC_SERVICE_USERNAME }}
+          CF_PASSWORD: ${{ secrets.AC_SERVICE_PASSWORD }}
+        with:
+          var-file: "vars.yml"
+          space: "Ctaas"
