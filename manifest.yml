@@ -1,5 +1,5 @@
 applications:
-- name: test-app
+- name: ((APP_NAME))
   health-check-type: process
   disk_quota: 1024M
   memory: 1024M
